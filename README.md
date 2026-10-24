@@ -12,3 +12,5 @@ The prototype has three views:
 1. **Survivor:** emergency alert, check-in, marking who is gone, the one question, and help dispatched (plus a USSD version for feature phones)
 2. **Responder:** prioritised task, address unlocked on accept, found, handover to a named guardian
 3. **District command:** north-star metric, oldest unreached cases, escalation, and redeploying volunteers
+
+**Video walkthrough:** [Shashank_Kumar_IIT_Delhi.mov](./Shashank_Kumar_IIT_Delhi.mov) (3 min, all three views)
