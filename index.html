@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tether Prototype</title>
+<style>
+:root{--ink:#1f2937;--mut:#6b7280;--acc:#c2410c;--acc2:#fff7ed;--line:#e5e7eb;--ok:#15803d;--bg:#f5f3ef;--red:#b91c1c}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--line);background:#fff;flex-wrap:wrap;gap:10px}
+.brand{font-weight:800;font-size:20px;color:var(--acc)} .brand span{color:var(--ink);font-weight:500;font-size:14px;margin-left:8px}
+nav button{border:1px solid var(--line);background:#fff;padding:8px 14px;border-radius:999px;font-size:14px;cursor:pointer;margin-left:6px}
+nav button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+main{display:flex;gap:32px;justify-content:center;padding:28px 16px;flex-wrap:wrap}
+.notes{max-width:340px;font-size:14px;line-height:1.5}
+.notes h3{margin:0 0 6px;color:var(--acc)} .notes ol{padding-left:18px} .notes li{margin-bottom:6px}
+.notes .tip{background:#fff;border:1px dashed #fdba74;border-radius:10px;padding:10px;margin-top:10px;font-size:13px}
+.phone{width:340px;height:680px;background:#111;border-radius:42px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,.25);flex-shrink:0}
+.scr{background:#fff;height:100%;border-radius:32px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.bar{display:flex;justify-content:space-between;padding:10px 20px 4px;font-size:12px;font-weight:600}
+.body{flex:1;overflow:auto;padding:12px 18px 18px}
+.btn{display:block;width:100%;padding:13px;border-radius:12px;border:0;background:var(--acc);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)} .btn.green{background:var(--ok)}
+.h{font-size:20px;font-weight:700;margin:6px 0 4px} .s{color:var(--mut);font-size:13px;margin:0 0 12px}
+.alert{background:#7f1d1d;color:#fff;border-radius:16px;padding:14px;margin-top:40px;font-size:14px;line-height:1.4}
+.alert b{display:block;font-size:12px;letter-spacing:.06em;opacity:.8;margin-bottom:6px}
+.row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+.av{width:36px;height:36px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.row .nm{flex:1;font-size:14px} .row .nm small{display:block;color:var(--mut);font-size:12px}
+.tg{display:flex;gap:4px} .tg button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 7px;font-size:11px;cursor:pointer}
+.tg button.on.ok{background:#dcfce7;border-color:#86efac} .tg button.on.gone{background:#fee2e2;border-color:#fca5a5}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px} .chip{border:1px solid var(--line);border-radius:999px;padding:7px 11px;font-size:13px;cursor:pointer;background:#fff}
+.chip.on{background:var(--acc2);border-color:var(--acc);color:var(--acc);font-weight:600}
+label{font-size:13px;font-weight:600;display:block;margin-top:8px}
+input{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;font-size:14px;margin-top:4px}
+.card{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:#fee2e2;color:var(--red)}
+.pill.amber{background:#ffedd5;color:var(--acc)} .pill.green{background:#dcfce7;color:var(--ok)}
+.big{font-size:44px;text-align:center;margin:30px 0 8px}
+.steps{display:flex;gap:4px;margin:6px 0 12px} .steps i{flex:1;height:4px;border-radius:2px;background:var(--line)} .steps i.on{background:var(--acc)}
+.map{position:relative;height:150px;border-radius:12px;background:linear-gradient(135deg,#ecfccb,#e0f2fe);overflow:hidden;margin-bottom:10px}
+.map .rd{position:absolute;background:#fff;opacity:.9}
+.pin{position:absolute;width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.ussd{background:#d1d5db;color:#111;font-family:monospace;padding:14px;border-radius:6px;font-size:14px;line-height:1.6;margin-top:30px}
+/* command */
+.cmd{width:min(900px,100%);background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.08);padding:18px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0 14px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:10px} .kpi b{display:block;font-size:22px} .kpi span{font-size:12px;color:var(--mut)}
+.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+.bigmap{position:relative;height:330px;border-radius:12px;background:linear-gradient(135deg,#f0fdf4,#eff6ff);overflow:hidden;border:1px solid var(--line)}
+.zone{position:absolute;border-radius:50%;background:rgba(185,28,28,.12);border:1px dashed var(--red)}
+table{width:100%;border-collapse:collapse;font-size:13px} th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line)} th{color:var(--mut);font-weight:600;font-size:12px}
+@media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Tether<span>nobody left alone after the Snap · clickable prototype</span></div>
+  <nav>
+    <button data-v="rep" class="on">1 · Survivor (reporter)</button>
+    <button data-v="res">2 · Responder</button>
+    <button data-v="cmd">3 · District command</button>
+  </nav>
+</header>
+
+<!-- ================= REPORTER ================= -->
+<main id="rep">
+  <div class="notes">
+    <h3>Survivor flow</h3>
+    <p>Day 1, 07:40. Priya, 29, Ghaziabad. Her neighbour Ramesh vanished last night. She knows his mother is bedridden and diabetic.</p>
+    <ol>
+      <li>Every phone gets an official <b>Cell Broadcast</b> alert, with no app needed.</li>
+      <li>She checks in and marks who in her contacts is gone.</li>
+      <li>Tether asks <b>one question</b> about each person gone: <i>did they look after anyone?</i></li>
+      <li>30 seconds later, a responder 600 m away is on the way.</li>
+    </ol>
+    <div class="tip">Feature phone? Tap <b>“Try the USSD version”</b> on the first screen. The same flow works on <b>*1947#</b> with no internet.</div>
+  </div>
+  <div class="phone"><div class="scr">
+    <div class="bar"><span>07:40</span><span>Jio 4G ▂▄ · 41%</span></div>
+    <div class="body" id="rbody"></div>
+  </div></div>
+</main>
+
+<!-- ================= RESPONDER ================= -->
+<main id="res" class="hidden">
+  <div class="notes">
+    <h3>Responder flow</h3>
+    <p>Anita is a school teacher who verified with ID and a selfie on Day 1. She sees <b>one task at a time</b>, ranked by the priority score.</p>
+    <ol>
+      <li>The case goes to the 3 nearest responders. The first to accept gets the address.</li>
+      <li>The address unlocks only after she accepts.</li>
+      <li>She logs "found" and the needs, then hands over to a <b>named guardian</b> with a photo log.</li>
+      <li>If nobody marks the case "found" within 60 minutes, it's re-routed and escalated to command.</li>
+    </ol>
+    <div class="tip">Child cases need <b>two responders</b> or a live photo handover. Every handover is visible to command.</div>
+  </div>
+  <div class="phone"><div class="scr">
+    <div class="bar"><span>07:42</span><span>Airtel 4G · 63%</span></div>
+    <div class="body" id="sbody"></div>
+  </div></div>
+</main>
+
+<!-- ================= COMMAND ================= -->
+<main id="cmd" class="hidden">
+  <div class="cmd">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div><div class="h" style="margin:0">Ghaziabad district · Day 1, 14:00</div><div class="s" style="margin:0">Live case board for the District Disaster Management Authority</div></div>
+      <span class="pill">2 areas under-covered</span>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b>4,812</b><span>dependents reported</span></div>
+      <div class="kpi"><b style="color:var(--ok)">3,107</b><span>reached (65%)</span></div>
+      <div class="kpi"><b style="color:var(--acc)">5.8 h</b><span>median time to reach (target &lt;12 h)</span></div>
+      <div class="kpi"><b>2,236</b><span>active verified responders</span></div>
+    </div>
+    <div class="grid2">
+      <div>
+        <div class="bigmap" id="bigmap">
+          <div class="rd" style="left:0;right:0;top:45%;height:8px;position:absolute;background:#fff"></div>
+          <div class="rd" style="top:0;bottom:0;left:38%;width:8px;position:absolute;background:#fff"></div>
+          <div class="zone" style="left:60%;top:10%;width:130px;height:130px"></div>
+          <div class="zone" style="left:8%;top:58%;width:110px;height:110px"></div>
+        </div>
+        <div class="s" style="margin-top:6px">● red = unreached infant / life-support · ● orange = unreached elder · ● green = reached · dashed = fewer than 1 responder per 10 open cases</div>
+      </div>
+      <div>
+        <div style="font-weight:700;margin-bottom:6px">Oldest unreached, highest priority</div>
+        <table>
+          <tr><th>Case</th><th>Dependent</th><th>Open</th><th></th></tr>
+          <tr><td>#GZB-2291</td><td>Infant, 8 mo</td><td>3h 10m</td><td><button class="chip" onclick="esc(this)">Escalate</button></td></tr>
+          <tr><td>#GZB-2304</td><td>Home oxygen, 71</td><td>2h 55m</td><td><button class="chip" onclick="esc(this)">Escalate</button></td></tr>
+          <tr><td>#GZB-2318</td><td>Twins, 3 yr</td><td>2h 20m</td><td><button class="chip" onclick="esc(this)">Escalate</button></td></tr>
+          <tr><td>#GZB-2340</td><td>Bedridden, 84</td><td>1h 45m</td><td><button class="chip" onclick="esc(this)">Escalate</button></td></tr>
+        </table>
+        <div class="card" style="margin-top:12px;background:var(--acc2);border-color:#fdba74">
+          <b>Suggested action</b>
+          <div class="s" style="margin:4px 0 8px">Indirapuram has 41 open cases and 3 responders. 120 verified responders are idle in Raj Nagar (6 km away).</div>
+          <button class="btn" style="margin:0" onclick="this.textContent='✓ Redeploy request sent to 40 responders';this.disabled=true">Ask 40 to move to Indirapuram</button>
+        </div>
+        <div class="s">Safety monitor: <span class="pill green">0 handover incidents</span> <span class="pill amber">2 responders flagged for review</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ---------- tabs ----------
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  ['rep','res','cmd'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==b.dataset.v));
+});
+
+// ---------- reporter ----------
+const R=document.getElementById('rbody');
+const contacts=[{n:'Ramesh Gupta',s:'Neighbour, flat 302',i:'RG'},{n:'Maa',s:'Mother',i:'M'},{n:'Arjun',s:'Colleague',i:'A'},{n:'Sunita Aunty',s:'Neighbour, flat 101',i:'SA'}];
+const status={};
+let dep={who:null,needs:new Set()};
+const steps=n=>'<div class="steps">'+[1,2,3,4].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')+'</div>';
+const rs={
+  alert(){R.innerHTML=`<div class="alert"><b>⚠ EMERGENCY ALERT · GOVERNMENT OF INDIA</b>Many people have vanished. Someone who depended on them may now be alone. <br><br>Open Tether or dial <b>*1947#</b> to check in and tell us who needs help.</div>
+    <button class="btn" onclick="rs.checkin()">Open Tether</button>
+    <button class="btn ghost" onclick="rs.ussd()">Try the USSD version (feature phone)</button>`},
+  ussd(){R.innerHTML=`<div class="ussd">TETHER *1947#<br>1. I am safe<br>2. Someone I know vanished<br>3. I need help<br>4. I can help (volunteer)<br>&gt; <b>2</b><br><br>Did they look after anyone?<br>1. Baby/child  2. Elder<br>3. Patient  4. No<br>&gt; <b>2</b><br><br>Send address by SMS to 1947.<br>A helper will be sent. Ref: GZB-2412</div>
+    <p class="s" style="margin-top:12px">The same logic works over USSD and SMS with no internet, because SMS and voice outlast mobile data.</p>
+    <button class="btn ghost" onclick="rs.alert()">← Back</button>`},
+  checkin(){R.innerHTML=`${steps(1)}<div class="big">👋</div><div class="h" style="text-align:center">Are you safe, Priya?</div>
+    <p class="s" style="text-align:center">Checking in tells your contacts you are here.</p>
+    <button class="btn green" onclick="rs.contacts()">I’m here and safe</button><button class="btn ghost" onclick="alert('Routes to emergency services (112) with location.')">I need help</button>`},
+  contacts(){R.innerHTML=`${steps(2)}<div class="h">Who is gone?</div><p class="s">3 of your contacts have not checked in. Mark the people you know are gone.</p>
+    ${contacts.map((c,k)=>`<div class="row"><div class="av">${c.i}</div><div class="nm">${c.n}<small>${c.s}</small></div>
+      <div class="tg"><button class="${status[k]==='ok'?'on ok':''}" onclick="mark(${k},'ok')">Here</button><button class="${status[k]==='gone'?'on gone':''}" onclick="mark(${k},'gone')">Gone</button></div></div>`).join('')}
+    <button class="btn" onclick="rs.ask()" ${Object.values(status).includes('gone')?'':'disabled style="opacity:.4"'}>Continue</button>`},
+  ask(){const g=contacts[Object.keys(status).find(k=>status[k]==='gone')];
+    R.innerHTML=`${steps(3)}<div class="h">Did ${g.n.split(' ')[0]} look after anyone?</div><p class="s">Someone who can't get help on their own now that ${g.n.split(' ')[0]} is gone.</p>
+    <div class="chips">${['👶 Baby / child','🧓 Elder who can’t go out','🏥 Patient (oxygen, dialysis, insulin)','🐕 Pet','No one'].map(x=>`<span class="chip ${dep.who===x?'on':''}" onclick="dep.who='${x}';rs.ask()">${x}</span>`).join('')}</div>
+    ${dep.who&&dep.who!=='No one'?`<label>Where are they?</label><input value="Flat 302, Shipra Sun City, Indirapuram">
+      <label>What do they urgently need?</label><div class="chips">${['Insulin','Water & food','Oxygen','Baby formula','Lifting / nursing'].map(x=>`<span class="chip ${dep.needs.has(x)?'on':''}" onclick="dep.needs.has('${x}')?dep.needs.delete('${x}'):dep.needs.add('${x}');rs.ask()">${x}</span>`).join('')}</div>
+      <label>Their name (if you know it)</label><input value="Kamla Devi, ~78, bedridden">
+      <button class="btn" onclick="rs.sent()">Send for help</button>`:dep.who==='No one'?`<button class="btn" onclick="rs.thanks()">Done</button>`:''}`},
+  sent(){R.innerHTML=`${steps(4)}<div class="big">🧡</div><div class="h" style="text-align:center">Help is on the way</div>
+    <div class="card"><span class="pill">Priority: HIGH</span><div style="margin-top:8px;font-size:14px"><b>Case #GZB-2412</b> · Kamla Devi, bedridden<br>Needs: ${[...dep.needs].join(', ')||'Check-up'}</div></div>
+    <div class="card" style="font-size:14px">✓ Sent to 3 verified responders nearby<br>✓ <b>Anita S.</b> (teacher) accepted · 600 m away<br><span class="s">You’ll get an SMS when Kamla is reached.</span></div>
+    <p class="s">Do you know anyone else who depended on someone who is gone?</p>
+    <button class="btn ghost" onclick="dep={who:null,needs:new Set()};rs.contacts()">Report another</button>
+    <button class="btn ghost" onclick="document.querySelector('[data-v=res]').click()">See the responder’s side →</button>`},
+  thanks(){R.innerHTML=`<div class="big">✓</div><div class="h" style="text-align:center">Thank you</div><p class="s" style="text-align:center">You helped us rule out one case.</p><button class="btn ghost" onclick="rs.contacts()">Back</button>`}
+};
+function mark(k,v){status[k]=v;rs.contacts()}
+rs.alert();
+
+// ---------- responder ----------
+const S=document.getElementById('sbody');
+const ss={
+  queue(){S.innerHTML=`<div class="h">Hi Anita 👋</div><p class="s">Verified responder · Indirapuram · 2 km radius</p>
+    <div class="map"><div class="rd" style="left:0;right:0;top:50%;height:6px"></div><div class="rd" style="top:0;bottom:0;left:45%;width:6px"></div>
+      <div class="pin" style="left:46%;top:44%;background:#2563eb"></div><div class="pin" style="left:62%;top:25%;background:#b91c1c"></div><div class="pin" style="left:22%;top:70%;background:#ea580c"></div></div>
+    <div class="card" style="border-color:#fca5a5"><span class="pill">NEW · PRIORITY HIGH</span><div style="font-weight:700;margin:8px 0 2px">Bedridden elder, ~78, alone ~9 h</div>
+      <div class="s" style="margin:0">Needs insulin, water · 600 m · reported by a neighbour<br>Exact address unlocks when you accept</div>
+      <button class="btn" onclick="ss.go()">Accept</button><button class="btn ghost" onclick="this.textContent='Passed to next responder'">Can’t go</button></div>
+    <div class="card"><span class="pill amber">PRIORITY MEDIUM</span><div style="font-weight:700;margin:8px 0 2px">Dog alone, 2 days of food</div><div class="s" style="margin:0">1.4 km · shown after the high-priority cases</div></div>`},
+  go(){S.innerHTML=`<span class="pill amber">ON THE WAY · 8 min</span><div class="h">Kamla Devi</div>
+    <p class="s">Flat 302, Shipra Sun City, Indirapuram<br>Caregiver (son, Ramesh) vanished at about 22:30 last night</p>
+    <div class="card"><b>Bring</b><div class="s" style="margin:4px 0 0">💧 Water · 💉 Insulin (ask the chemist on the ground floor) · 🍚 Soft food</div></div>
+    <div class="card"><b>Safety</b><div class="s" style="margin:4px 0 0">Your location is shared with command while this case is open. If the case is not marked "found" within 60 minutes, it is re-routed and escalated.</div></div>
+    <button class="btn" onclick="ss.found()">I’ve found her</button><button class="btn ghost" onclick="alert('Case re-routed. Command notified.')">Nobody here / can’t enter</button>`},
+  found(){S.innerHTML=`<span class="pill green">FOUND · 07:58</span><div class="h">How is she?</div>
+    <div class="chips"><span class="chip on">Conscious</span><span class="chip">Needs a doctor now</span><span class="chip on">Dehydrated</span><span class="chip">Stable</span></div>
+    <label>Handover to (named temporary guardian)</label><input value="Sunita Sharma, neighbour, flat 101">
+    <label>Photo log</label><div class="card s" style="text-align:center;margin-top:4px">📷 Handover photo captured · stored with the case</div>
+    <button class="btn green" onclick="ss.done()">Complete handover</button>`},
+  done(){S.innerHTML=`<div class="big">✓</div><div class="h" style="text-align:center">Kamla is safe</div>
+    <p class="s" style="text-align:center">Reached 9 h 28 m after her caregiver vanished.<br>Priya (who reported) has been told by SMS.</p>
+    <div class="card s">Kamla's guardian will be linked to food and insulin supply on Day 2 (Week 1 to 4 of the roadmap: Care).</div>
+    <button class="btn" onclick="ss.queue()">Next case</button><button class="btn ghost" onclick="document.querySelector('[data-v=cmd]').click()">See district command →</button>`}
+};
+ss.queue();
+
+// ---------- command map ----------
+const M=document.getElementById('bigmap');
+let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;
+for(let i=0;i<70;i++){const p=document.createElement('div');p.className='pin';
+  const zone=i<14?[66,18]:i<24?[13,64]:null;
+  const x=zone?zone[0]+rnd()*14:rnd()*95, y=zone?zone[1]+rnd()*22:rnd()*92;
+  p.style.left=x+'%';p.style.top=y+'%';p.style.width=p.style.height='10px';
+  p.style.background=zone?(rnd()<.5?'#b91c1c':'#ea580c'):(rnd()<.8?'#16a34a':'#ea580c');M.appendChild(p)}
+function esc(b){b.textContent='✓ Escalated';b.classList.add('on')}
+</script>
+</body>
+</html>
